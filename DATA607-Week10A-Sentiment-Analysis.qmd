@@ -1,0 +1,373 @@
+---
+title: "Assignment 10A: Sentiment Analysis"
+subtitle: "Approach"
+author: "Patricio Romero"
+date: "2026-11-15"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-fold: true
+    code-summary: "Show code"
+    code-tools: false
+    embed-resources: true
+
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Project Overview
+
+The goal of this project is to explore sentiment analysis
+using R and Tidyverse. I will reproduce the sentiment
+analysis presented in Chapter 2 of the book "Text Mining
+with R" by Julia Silge and David Robinson.
+
+To extend the original analysis, I will use a different
+text dataset related to electric vehicle reviews and
+include an additional sentiment lexicon.
+
+As an electrical engineer, I am interested in understanding
+how people describe electric vehicle performance, battery
+life, driving range, and charging systems.
+
+This project will help me understand how different sentiment
+lexicons can influence the results of text analysis.
+
+# Research Questions
+
+1. What are the most common positive and negative words
+   in electric vehicle reviews?
+
+2. What is the overall sentiment of electric vehicle reviews?
+
+3. How do sentiment analysis results vary across different
+   sentiment lexicons?
+
+4. How do the results from the electric vehicle dataset
+   differ from the original Chapter 2 analysis?
+   
+# Data Source
+
+The dataset selected for this project is the Expert Review
+Dataset on Electric Quadricycles, available on Zenodo.
+
+The dataset contains 95 reviews of small electric vehicles.
+The original data includes three variables:
+
+- Brand: Electric vehicle brand or model.
+- URL: Original source of the review.
+- Text: Full text of the vehicle review.
+
+The Excel file contains five sheets. For this project,
+I will use only the "Original data" sheet because I want
+to perform my own sentiment analysis using R.
+
+**Source:** https://zenodo.org/records/14501242
+
+## Data Import
+
+```{r data-import}
+library(tidyverse)
+library(readxl)
+library(knitr)
+library(kableExtra)
+
+# Import the original dataset
+ev_reviews <- read_excel(
+  "Data/Data Notes - Dataset.xlsx",
+  sheet = "Original data"
+)
+```
+
+The original dataset was imported from an Excel file.
+The following tables show the dataset dimensions,
+variable descriptions, and a preview of the data.
+
+## Dataset Overview
+
+```{r dataset-overview}
+# Create a dataset summary
+dataset_summary <- tibble(
+  Description = c(
+    "Number of observations",
+    "Number of variables",
+    "Vehicle brands or models",
+    "Data format",
+    "Selected sheet"
+  ),
+  Value = c(
+    nrow(ev_reviews),
+    ncol(ev_reviews),
+    n_distinct(ev_reviews$Brand, na.rm = TRUE),
+    "Excel (.xlsx)",
+    "Original data"
+  )
+)
+
+dataset_summary %>%
+  kable(
+    caption = "Table 1. Dataset Overview",
+    align = c("l", "c")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  )
+```
+
+## Variable Description
+
+```{r variable-description}
+# Describe the original variables
+variable_description <- tibble(
+  Variable = names(ev_reviews),
+  Type = sapply(ev_reviews, class),
+  Description = c(
+    "Electric vehicle brand or model",
+    "Original source of the review",
+    "Full text of the vehicle review"
+  )
+)
+
+variable_description %>%
+  kable(
+    caption = "Table 2. Variable Description",
+    align = "l"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  )
+```
+
+## Data Preview
+
+```{r data-preview}
+# Display the first six observations
+ev_reviews %>%
+  mutate(
+    URL = str_trunc(URL, 45),
+    Text = str_trunc(Text, 100)
+  ) %>%
+  head(6) %>%
+  kable(
+    caption = "Table 3. Electric Vehicle Reviews",
+    align = "l"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = TRUE
+  ) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(3, width = "15em")
+```
+
+The dataset contains 95 observations and three variables.
+The Text column will be the main variable for sentiment
+analysis, while the Brand column will help compare
+reviews across different electric vehicles.
+
+# Data Validation
+
+Before performing sentiment analysis, I will check the
+quality of the dataset. This includes checking for missing
+values, duplicate records, and empty review texts.
+
+## Missing Values
+
+```{r missing-values}
+# Check missing values by variable
+missing_summary <- tibble(
+  Variable = names(ev_reviews),
+  `Missing Values` = colSums(is.na(ev_reviews)),
+  Percentage = round(
+    colMeans(is.na(ev_reviews)) * 100, 2
+  )
+)
+
+missing_summary %>%
+  kable(
+    caption = "Table 4. Missing Values",
+    align = c("l", "c", "c")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  )
+```
+
+## Reviews by Vehicle
+
+```{r reviews-by-vehicle}
+# Count reviews by vehicle brand or model
+vehicle_summary <- ev_reviews %>%
+  count(Brand, name = "Reviews", sort = TRUE) %>%
+  mutate(
+    Percentage = round(Reviews / sum(Reviews) * 100, 2)
+  )
+
+vehicle_summary %>%
+  kable(
+    caption = "Table 5. Number of Reviews by Vehicle",
+    align = c("l", "c", "c")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  column_spec(1, bold = TRUE)
+```
+
+The number of reviews may vary across vehicles.
+This is important to consider when comparing
+sentiment analysis results.
+
+# Original Analysis and Proposed Extension
+
+## Original Analysis
+
+The original analysis is based on Chapter 2 of the book
+"Text Mining with R" by Julia Silge and David Robinson.
+
+The authors use Jane Austen's books to demonstrate how
+sentiment analysis works with tidy data. They use three
+sentiment lexicons: AFINN, Bing, and NRC.
+
+I will reproduce the original analysis to understand how
+these methods work.
+
+## Proposed Extension
+
+To extend the original analysis, I will use a different
+dataset containing 95 electric vehicle reviews.
+
+I will also include the Loughran-McDonald lexicon as an
+additional sentiment lexicon.
+
+This extension will allow me to compare sentiment results
+using different types of text and sentiment lexicons.
+
+# Methodology
+
+The analysis will be developed in R using Tidyverse
+and tidytext.
+
+The following steps will be used:
+
+1. Reproduce the original sentiment analysis from Chapter 2.
+2. Import and validate the electric vehicle dataset.
+3. Clean and prepare the text data.
+4. Convert the text into individual words using tokenization.
+5. Remove common words when appropriate.
+6. Apply the AFINN, Bing, NRC, and Loughran-McDonald lexicons.
+7. Compare sentiment results across vehicle brands and models.
+8. Create visualizations using ggplot2.
+9. Compare the results and explain the main findings.
+
+## Sentiment Lexicons
+
+```{r sentiment-lexicons}
+lexicon_summary <- tibble(
+  Lexicon = c(
+    "AFINN",
+    "Bing",
+    "NRC",
+    "Loughran-McDonald"
+  ),
+  Description = c(
+    "Uses numerical sentiment scores from -5 to 5",
+    "Classifies words as positive or negative",
+    "Classifies words by sentiment and emotion",
+    "Classifies words using financial sentiment categories"
+  ),
+  Purpose = c(
+    "Original analysis",
+    "Original analysis",
+    "Original analysis",
+    "Proposed extension"
+  )
+)
+
+lexicon_summary %>%
+  kable(
+    caption = "Table 6. Sentiment Lexicons",
+    align = "l"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = TRUE,
+    position = "center"
+  ) %>%
+  column_spec(1, bold = TRUE)
+```
+
+Each lexicon uses a different method to score and classify words. For this reason, I will use normalized values to make the sentiment scores comparable.
+
+# Expected Results
+
+I expect to identify common positive and negative words
+in electric vehicle reviews.
+
+I also expect to find different sentiment patterns
+across vehicle brands and models.
+
+The comparison between the four sentiment lexicons
+may show how different methods can produce different
+results using the same text.
+
+# Limitations
+
+This project has some limitations:
+
+- The dataset contains only 95 reviews.
+- The number of reviews may vary across vehicles.
+- The sentiment lexicons may not recognize some
+  technical electrical and automotive terms.
+- Sentiment analysis may not correctly identify
+  sarcasm, negation, or the meaning of words
+  in specific contexts.
+- The Loughran-McDonald lexicon was designed for
+  financial text, which may affect its results.
+
+These limitations will be considered when interpreting
+the final results.
+
+# References
+
+- Silge, J., & Robinson, D. (2017). Text Mining with R:
+  A Tidy Approach. O'Reilly Media.
+  https://www.tidytextmining.com/
+
+- Chapter 2: Sentiment Analysis with Tidy Data.
+  https://www.tidytextmining.com/sentiment.html
+
+- Expert Review Dataset on Electric Quadricycles.
+  Zenodo.
+  https://zenodo.org/records/14501242
+
+- Tidytext R Package.
+  https://juliasilge.github.io/tidytext/
+
+- Tidyverse.
+  https://www.tidyverse.org/
+
+- Loughran-McDonald Sentiment Word Lists.
+  https://sraf.nd.edu/loughranmcdonald-master-dictionary/
+  
+# Appendix: AI Assistance
+
+ChatGPT was used to help understand the assignment
+requirements, organize the planned approach, improve
+English writing, and provide guidance for the R code.
+
+I selected the electric vehicle topic based on my
+professional background and will run, review, and
+verify the data transformations, sentiment analysis,
+visualizations, and final conclusions.
