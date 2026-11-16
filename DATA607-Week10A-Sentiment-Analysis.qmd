@@ -1,6 +1,6 @@
 ---
 title: "Assignment 10A: Sentiment Analysis"
-subtitle: "Approach"
+subtitle: "Code"
 author: "Patricio Romero"
 date: "2026-11-15"
 format:
@@ -21,19 +21,19 @@ execute:
 # Project Overview
 
 The goal of this project is to explore sentiment analysis
-using R and Tidyverse. I will reproduce the sentiment
-analysis presented in Chapter 2 of the book "Text Mining
-with R" by Julia Silge and David Robinson.
+using R and Tidyverse. This project reproduces the main
+sentiment analysis methods presented in Chapter 2 of the
+book "Text Mining with R" by Julia Silge and David Robinson.
 
-To extend the original analysis, I will use a different
+To extend the original analysis, I used a different
 text dataset related to electric vehicle reviews and
-include an additional sentiment lexicon.
+included an additional sentiment lexicon.
 
 As an electrical engineer, I am interested in understanding
 how people describe electric vehicle performance, battery
 life, driving range, and charging systems.
 
-This project will help me understand how different sentiment
+This project helps me understand how different sentiment
 lexicons can influence the results of text analysis.
 
 # Research Questions
@@ -54,18 +54,22 @@ lexicons can influence the results of text analysis.
 The dataset selected for this project is the Expert Review
 Dataset on Electric Quadricycles, available on Zenodo.
 
-The dataset contains 95 reviews of small electric vehicles.
-The original data includes three variables:
+The dataset contains 95 reviews and three variables:
 
 - Brand: Electric vehicle brand or model.
 - URL: Original source of the review.
 - Text: Full text of the vehicle review.
 
+The Text column is the main variable used for sentiment
+analysis, while the Brand column identifies the different
+electric vehicle brands and models.
+
 The Excel file contains five sheets. For this project,
-I will use only the "Original data" sheet because I want
-to perform my own sentiment analysis using R.
+I selected only the "Original data" sheet to perform
+my own sentiment analysis using R.
 
 **Source:** https://zenodo.org/records/14501242
+
 
 ## Data Import
 
@@ -167,16 +171,16 @@ ev_reviews %>%
   column_spec(3, width = "15em")
 ```
 
-The dataset contains 95 observations and three variables.
-The Text column will be the main variable for sentiment
-analysis, while the Brand column will help compare
-reviews across different electric vehicles.
-
 # Data Validation
 
-Before performing sentiment analysis, I will check the
-quality of the dataset. This includes checking for missing
+Before performing sentiment analysis, the quality of the
+dataset was evaluated. This includes checking for missing
 values, duplicate records, and empty review texts.
+
+Missing values are evaluated in this section, while
+duplicate records and empty reviews are checked during
+data preparation.
+
 
 ## Missing Values
 
@@ -240,36 +244,37 @@ The authors use Jane Austen's books to demonstrate how
 sentiment analysis works with tidy data. They use three
 sentiment lexicons: AFINN, Bing, and NRC.
 
-I will reproduce the original analysis to understand how
-these methods work.
+I reproduced the main methods of the original analysis
+to understand how sentiment analysis works.
 
 ## Proposed Extension
 
-To extend the original analysis, I will use a different
+To extend the original analysis, I used a different
 dataset containing 95 electric vehicle reviews.
 
-I will also include the Loughran-McDonald lexicon as an
+I also included the Loughran-McDonald lexicon as an
 additional sentiment lexicon.
 
-This extension will allow me to compare sentiment results
+This extension allows me to compare sentiment results
 using different types of text and sentiment lexicons.
 
 # Methodology
 
-The analysis will be developed in R using Tidyverse
+The analysis was developed in R using Tidyverse
 and tidytext.
 
-The following steps will be used:
+The following steps were used:
 
-1. Reproduce the original sentiment analysis from Chapter 2.
+1. Reproduce the main sentiment analysis methods from Chapter 2.
 2. Import and validate the electric vehicle dataset.
 3. Clean and prepare the text data.
 4. Convert the text into individual words using tokenization.
 5. Remove common words when appropriate.
 6. Apply the AFINN, Bing, NRC, and Loughran-McDonald lexicons.
-7. Compare sentiment results across vehicle brands and models.
+7. Normalize and compare sentiment scores across lexicons.
 8. Create visualizations using ggplot2.
-9. Compare the results and explain the main findings.
+9. Compare the original analysis with the proposed extension.
+
 
 ## Sentiment Lexicons
 
@@ -308,19 +313,19 @@ lexicon_summary %>%
   column_spec(1, bold = TRUE)
 ```
 
-Each lexicon uses a different method to score and classify words. For this reason, I will use normalized values to make the sentiment scores comparable.
+Each lexicon uses a different method to score and
+classify words. For this reason, normalized values
+are used to facilitate the comparison of sentiment scores.
 
 # Expected Results
 
-I expect to identify common positive and negative words
-in electric vehicle reviews.
-
-I also expect to find different sentiment patterns
-across vehicle brands and models.
+The initial expectation was to identify common positive
+and negative words in electric vehicle reviews and
+understand the overall sentiment of the dataset.
 
 The comparison between the four sentiment lexicons
-may show how different methods can produce different
-results using the same text.
+was expected to show how different methods can produce
+different results using the same text.
 
 # Limitations
 
@@ -336,38 +341,958 @@ This project has some limitations:
 - The Loughran-McDonald lexicon was designed for
   financial text, which may affect its results.
 
-These limitations will be considered when interpreting
+These limitations are considered when interpreting
 the final results.
+
+# Reproduction of the Original Analysis
+
+This section reproduces the main sentiment analysis
+methods presented in Chapter 2 of the book "Text Mining
+with R" by Julia Silge and David Robinson.
+
+The original analysis uses Jane Austen's books and three
+sentiment lexicons: AFINN, Bing, and NRC.
+
+The purpose of this section is to understand how sentiment
+analysis works before applying the same methods to the
+electric vehicle dataset.
+
+## Required Libraries
+
+The following R packages are used to reproduce
+the original sentiment analysis and prepare the text data.
+
+```{r sentiment-libraries}
+library(tidytext)
+library(janeaustenr)
+library(textdata)
+```
+
+## Sentiment Lexicons
+
+The original analysis uses three sentiment lexicons:
+AFINN, Bing, and NRC. Each lexicon uses a different
+method to score or classify words.
+
+```{r original-sentiment-lexicons}
+afinn <- get_sentiments("afinn")
+bing <- get_sentiments("bing")
+nrc <- get_sentiments("nrc")
+```
+
+```{r original-lexicon-summary}
+original_lexicon_summary <- tibble(
+  Lexicon = c("AFINN", "Bing", "NRC"),
+  Entries = c(
+    nrow(afinn),
+    nrow(bing),
+    nrow(nrc)
+  ),
+  `Unique Words` = c(
+    n_distinct(afinn$word),
+    n_distinct(bing$word),
+    n_distinct(nrc$word)
+  ),
+  Classification = c(
+    "Numerical scores",
+    "Positive and negative",
+    "Sentiment and emotions"
+  )
+)
+
+original_lexicon_summary %>%
+  kable(
+    caption = "Table 7. Original Sentiment Lexicons",
+    align = c("l", "c", "c", "l"),
+    format.args = list(big.mark = ",")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  column_spec(1, bold = TRUE)
+```
+
+## Text Data Preparation
+
+The original dataset contains six novels written by
+Jane Austen. The text is converted into a tidy format,
+with one word per row.
+
+The book name, line number, and chapter number are
+preserved for the sentiment analysis.
+
+```{r original-text-preparation}
+tidy_books <- austen_books() %>%
+  group_by(book) %>%
+  mutate(
+    linenumber = row_number(),
+    chapter = cumsum(
+      str_detect(
+        text,
+        regex("^chapter [\\divxlc]",
+              ignore_case = TRUE)
+      )
+    )
+  ) %>%
+  ungroup() %>%
+  unnest_tokens(word, text)
+```
+
+```{r original-text-preview}
+tidy_books %>%
+  head(10) %>%
+  kable(
+    caption = "Table 8. Tokenized Text Data",
+    align = c("l", "c", "c", "l")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  )
+```
+
+The data is now ready for sentiment analysis.
+Each row contains a single word and its location
+in the original book.
+
+## Sentiment Analysis with Inner Join
+
+The NRC lexicon is used to identify words
+associated with joy in the novel Emma.
+
+The inner_join() function matches words from the
+original text with words in the sentiment lexicon.
+
+```{r original-nrc-joy}
+nrc_joy <- nrc %>%
+  filter(sentiment == "joy")
+
+emma_joy <- tidy_books %>%
+  filter(book == "Emma") %>%
+  inner_join(nrc_joy, by = "word") %>%
+  count(word, sort = TRUE)
+
+emma_joy %>%
+  head(10) %>%
+  kable(
+    caption = "Table 9. Most Common Joy Words in Emma",
+    col.names = c("Word", "Frequency"),
+    align = c("l", "c")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  column_spec(1, bold = TRUE)
+```
+
+The word "good" is the most common word associated with joy in the novel Emma, with 359 occurrences, followed by "friend" (166) and "hope" (143).
+
+Other words, such as "happy" and "love", are also associated with joy. However, some words may have different meanings depending on the context.
+
+## Sentiment Changes Across Novels
+
+The Bing lexicon is used to examine how sentiment
+changes throughout Jane Austen's six novels.
+
+Each novel is divided into sections of 80 lines.
+The net sentiment is calculated by subtracting
+the number of negative words from the number
+of positive words.
+
+```{r original-bing-sentiment}
+jane_austen_sentiment <- tidy_books %>%
+  inner_join(bing, by = "word") %>%
+  count(
+    book,
+    index = linenumber %/% 80,
+    sentiment
+  ) %>%
+  pivot_wider(
+    names_from = sentiment,
+    values_from = n,
+    values_fill = 0
+  ) %>%
+  mutate(sentiment = positive - negative)
+```
+
+```{r original-sentiment-plot, fig.width=10, fig.height=8}
+ggplot(
+  jane_austen_sentiment,
+  aes(x = index, y = sentiment, fill = book)
+) +
+  geom_col(show.legend = FALSE) +
+  geom_hline(
+    yintercept = 0,
+    color = "gray40",
+    linewidth = 0.4
+  ) +
+  facet_wrap(
+    ~book,
+    ncol = 2,
+    scales = "free_x"
+  ) +
+  labs(
+    title = "Sentiment Changes Across Jane Austen's Novels",
+    subtitle = "Sentiment analysis using the Bing lexicon",
+    x = "Text Sections (80 Lines)",
+    y = "Net Sentiment",
+    caption = "Source: Text Mining with R, Chapter 2"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+The visualization shows how sentiment changes
+throughout the six novels.
+
+Positive values indicate that positive words are
+more frequent, while negative values indicate
+that negative words are more frequent.
+
+Each novel shows different sentiment patterns
+as the story progresses.
+
+## Comparing the Three Sentiment Lexicons
+
+This section compares the sentiment results
+from AFINN, Bing, and NRC using the novel Pride and
+Prejudice.
+
+The same sections of 80 lines are used to compare
+how each lexicon measures sentiment.
+
+```{r original-pride-prejudice}
+pride_prejudice <- tidy_books %>%
+  filter(book == "Pride & Prejudice")
+```
+
+**AFINN Sentiment**
+
+The sentiment score is calculated by adding the
+numerical values assigned to each word.
+
+```{r original-afinn-comparison}
+afinn_comparison <- pride_prejudice %>%
+  inner_join(afinn, by = "word") %>%
+  group_by(index = linenumber %/% 80) %>%
+  summarise(
+    sentiment = sum(value),
+    .groups = "drop"
+  ) %>%
+  mutate(method = "AFINN")
+```
+
+**Bing and NRC Sentiment**
+
+The sentiment score is calculated by subtracting
+the number of negative words from the number
+of positive words.
+
+```{r original-bing-nrc-comparison}
+bing_nrc_comparison <- bind_rows(
+  pride_prejudice %>%
+    inner_join(bing, by = "word") %>%
+    mutate(method = "Bing"),
+
+  pride_prejudice %>%
+    inner_join(
+      nrc %>%
+        filter(sentiment %in% c("positive", "negative")),
+      by = "word",
+      relationship = "many-to-many"
+    ) %>%
+    mutate(method = "NRC")
+) %>%
+  count(
+    method,
+    index = linenumber %/% 80,
+    sentiment
+  ) %>%
+  pivot_wider(
+    names_from = sentiment,
+    values_from = n,
+    values_fill = 0
+  ) %>%
+  mutate(sentiment = positive - negative)
+```
+
+**Sentiment Comparison**
+
+The results from the three lexicons are combined
+and visualized to compare their sentiment patterns
+throughout the novel.
+
+```{r original-lexicon-comparison-plot, fig.width=10, fig.height=8}
+original_comparison <- bind_rows(
+  afinn_comparison,
+  bing_nrc_comparison
+)
+
+ggplot(
+  original_comparison,
+  aes(x = index, y = sentiment, fill = method)
+) +
+  geom_col(show.legend = FALSE) +
+  geom_hline(
+    yintercept = 0,
+    color = "gray40",
+    linewidth = 0.4
+  ) +
+  facet_wrap(
+    ~method,
+    ncol = 1,
+    scales = "free_y"
+  ) +
+  scale_fill_manual(
+    values = c(
+      "AFINN" = "#4472C4",
+      "Bing" = "#ED7D31",
+      "NRC" = "#70AD47"
+    )
+  ) +
+  labs(
+    title = "Comparison of Three Sentiment Lexicons",
+    subtitle = "Pride and Prejudice by Jane Austen",
+    x = "Text Sections (80 Lines)",
+    y = "Sentiment Score",
+    caption = "Source: Text Mining with R, Chapter 2"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+The three sentiment lexicons show similar patterns
+throughout the novel, but their sentiment scores
+are different.
+
+AFINN produces larger changes in sentiment, while
+Bing shows lower sentiment values. NRC tends to
+classify the text more positively.
+
+These results show that the selection of a sentiment
+lexicon can influence the final results of the analysis.
+
+## Most Common Positive and Negative Words
+
+The most frequent positive words are "like" (425), "well" (181), and "good" (117). The most frequent negative words are "limited" (69), "hard" (64), "problem" (42), and "expensive" (42).
+
+These results suggest that reviewers use more positive language, although some words may indicate concerns about vehicle limitations, cost, and usability. The context of each word should also be considered.
+
+**Word Frequency Calculation**
+
+```{r original-bing-word-counts}
+bing_word_counts <- tidy_books %>%
+  inner_join(bing, by = "word") %>%
+  count(word, sentiment, sort = TRUE) %>%
+  ungroup()
+```
+
+**Positive and Negative Word Visualization**
+
+The ten most frequent words from each sentiment
+category are selected and displayed in a bar chart.
+
+```{r original-bing-word-plot, fig.width=10, fig.height=6}
+bing_word_counts %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 10, with_ties = FALSE) %>%
+  ungroup() %>%
+  mutate(
+    word = reorder(word, n)
+  ) %>%
+  ggplot(aes(x = n, y = word, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(
+    aes(label = n),
+    hjust = -0.15,
+    size = 3.5
+  ) +
+  facet_wrap(
+    ~sentiment,
+    scales = "free_y"
+  ) +
+  scale_fill_manual(
+    values = c(
+      "negative" = "#E15759",
+      "positive" = "#59A14F"
+    )
+  ) +
+  scale_x_continuous(
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  labs(
+    title = "Most Common Positive and Negative Words",
+    subtitle = "Sentiment analysis of Jane Austen's novels",
+    x = "Word Frequency",
+    y = NULL,
+    caption = "Source: Text Mining with R, Chapter 2"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank()
+  )
+```
+
+The words "well", "good", and "great" are among
+the most frequent positive words.
+
+The word "miss" is the most frequent word classified
+as negative. However, Jane Austen often uses this
+word as a title rather than a negative expression.
+
+This example shows why the context of words is
+important when interpreting sentiment analysis results.
+
+
+## Custom Stop Words
+
+Some words may be incorrectly classified because their
+meaning depends on the context. For example, the word
+"miss" is classified as negative by the Bing lexicon,
+but it is frequently used as a title in Jane Austen's
+novels.
+
+To reduce incorrect classifications, a custom stop
+words list is created and applied before updating
+the sentiment analysis.
+
+```{r original-custom-stop-words, fig.width=10, fig.height=6}
+# Create a custom stop words list
+custom_stop_words <- bind_rows(
+  tibble(
+    word = "miss",
+    lexicon = "custom"
+  ),
+  stop_words
+)
+
+# Remove stop words and calculate word frequencies
+filtered_bing_counts <- tidy_books %>%
+  anti_join(custom_stop_words, by = "word") %>%
+  inner_join(bing, by = "word") %>%
+  count(word, sentiment, sort = TRUE)
+
+# Visualize the updated sentiment results
+filtered_bing_counts %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 10, with_ties = FALSE) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(x = n, y = word, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(
+    aes(label = n),
+    hjust = -0.15,
+    size = 3.5
+  ) +
+  facet_wrap(
+    ~sentiment,
+    scales = "free_y"
+  ) +
+  scale_fill_manual(
+    values = c(
+      "negative" = "#E15759",
+      "positive" = "#59A14F"
+    )
+  ) +
+  scale_x_continuous(
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  labs(
+    title = "Sentiment Analysis After Removing Stop Words",
+    subtitle = "Positive and negative words using the Bing lexicon",
+    x = "Word Frequency",
+    y = NULL,
+    caption = "Adapted from Text Mining with R, Chapter 2"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank()
+  )
+```
+
+After removing the custom and standard stop words,
+the word "miss" is no longer included in the results.
+This shows the importance of understanding the
+context of words when performing sentiment analysis.
+
+## Word Clouds
+
+Word clouds provide a visual representation of the
+most frequent words based on their sentiment.
+
+```{r original-word-clouds, fig.width=9, fig.height=6}
+library(wordcloud)
+
+set.seed(123)
+
+bing_word_counts %>%
+  pivot_wider(
+    names_from = sentiment,
+    values_from = n,
+    values_fill = 0
+  ) %>%
+  select(word, negative, positive) %>%
+  column_to_rownames("word") %>%
+  as.matrix() %>%
+  comparison.cloud(
+    colors = c("#E15759", "#59A14F"),
+    max.words = 100
+  )
+```
+
+The word cloud highlights the most frequent positive
+and negative words in Jane Austen's novels. Larger
+words represent higher frequencies.
+
+# Electric Vehicle Sentiment Analysis
+
+This section applies the sentiment analysis methods
+from Chapter 2 to the electric vehicle dataset.
+
+The analysis uses four sentiment lexicons:
+AFINN, Bing, NRC, and Loughran-McDonald.
+
+Before performing the analysis, the data is validated,
+cleaned, and converted into individual words.
+
+
+```{r ev-data-preparation}
+# Check duplicate records and empty reviews
+duplicate_records <- sum(duplicated(ev_reviews))
+
+empty_reviews <- sum(
+  is.na(ev_reviews$Text) |
+    str_trim(ev_reviews$Text) == ""
+)
+
+# Clean the original dataset
+ev_clean <- ev_reviews %>%
+  distinct() %>%
+  filter(
+    !is.na(Text),
+    str_trim(Text) != ""
+  ) %>%
+  mutate(review_id = row_number())
+
+# Tokenize the electric vehicle reviews
+ev_words <- ev_clean %>%
+  unnest_tokens(word, Text)
+
+# Load the additional sentiment lexicon
+loughran <- get_sentiments("loughran")
+
+# Summarize data preparation
+ev_preparation_summary <- tibble(
+  Description = c(
+    "Original reviews",
+    "Duplicate records",
+    "Empty reviews",
+    "Valid reviews",
+    "Total words",
+    "Unique words"
+  ),
+  Value = c(
+    nrow(ev_reviews),
+    duplicate_records,
+    empty_reviews,
+    nrow(ev_clean),
+    nrow(ev_words),
+    n_distinct(ev_words$word)
+  )
+)
+
+ev_preparation_summary %>%
+  kable(
+    caption = "Table 10. Electric Vehicle Data Preparation",
+    align = c("l", "c"),
+    format.args = list(big.mark = ",")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  )
+```
+
+The prepared dataset is used to answer the
+research questions and compare the results across
+the four sentiment lexicons.
+
+
+## Most Common Positive and Negative Words
+
+The Bing lexicon is used to identify the most
+frequent positive and negative words in electric
+vehicle reviews. This helps us understand the main
+opinions expressed by reviewers.
+
+```{r ev-sentiment-word-frequency, fig.width=10, fig.height=6}
+# Calculate positive and negative word frequencies
+ev_bing_counts <- ev_words %>%
+  inner_join(bing, by = "word") %>%
+  count(word, sentiment, sort = TRUE)
+
+# Visualize the top 10 words for each sentiment
+ev_bing_counts %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 10, with_ties = FALSE) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(x = n, y = word, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(
+    aes(label = n),
+    hjust = -0.15,
+    size = 3.5
+  ) +
+  facet_wrap(
+    ~sentiment,
+    scales = "free_y"
+  ) +
+  scale_fill_manual(
+    values = c(
+      "negative" = "#E15759",
+      "positive" = "#59A14F"
+    )
+  ) +
+  scale_x_continuous(
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  labs(
+    title = "Most Common Positive and Negative Words",
+    subtitle = "Electric Vehicle Reviews - Bing Lexicon",
+    x = "Word Frequency",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank()
+  )
+```
+
+The results show the most frequent positive and
+negative words in electric vehicle reviews.
+Positive words may highlight vehicle strengths,
+while negative words may indicate problems and
+concerns. This analysis helps identify the main
+opinions expressed by electric vehicle reviewers.
+
+
+## Overall Sentiment of Electric Vehicle Reviews
+
+The Bing lexicon is used to measure the overall
+sentiment of electric vehicle reviews by comparing
+the frequency of positive and negative words.
+
+```{r ev-overall-sentiment, fig.width=9, fig.height=5}
+# Calculate overall sentiment
+ev_overall_sentiment <- ev_bing_counts %>%
+  group_by(sentiment) %>%
+  summarise(total = sum(n), .groups = "drop") %>%
+  mutate(percentage = total / sum(total) * 100)
+
+# Visualize overall sentiment
+ggplot(
+  ev_overall_sentiment,
+  aes(x = sentiment, y = percentage, fill = sentiment)
+) +
+  geom_col(width = 0.55, show.legend = FALSE) +
+  geom_text(
+    aes(label = sprintf("%.1f%%", percentage)),
+    vjust = -0.5,
+    size = 5
+  ) +
+  scale_fill_manual(
+    values = c(
+      "negative" = "#E15759",
+      "positive" = "#59A14F"
+    )
+  ) +
+  scale_x_discrete(
+    labels = c("Negative", "Positive")
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    labels = scales::label_percent(scale = 1)
+  ) +
+  labs(
+    title = "Overall Sentiment of Electric Vehicle Reviews",
+    subtitle = "Sentiment distribution using the Bing lexicon",
+    x = NULL,
+    y = "Percentage of Sentiment Words"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+According to the Bing lexicon, 70.9% of the words classified by sentiment are positive, while 29.1% are negative.
+
+These results show that positive language is more frequent in the electric vehicle dataset. However, these percentages represent sentiment words, not the percentage of positive or negative reviews.
+
+## Comparison of the Four Sentiment Lexicons
+
+To facilitate the comparison, AFINN scores are divided
+by five, while the other lexicons assign a value of
++1 to positive words and -1 to negative words.
+
+The net sentiment scores are then calculated
+per 100 words in the dataset.
+
+```{r ev-lexicon-comparison, fig.width=10, fig.height=5}
+# Calculate the total number of words
+total_ev_words <- nrow(ev_words)
+
+# AFINN sentiment scores
+ev_afinn <- ev_words %>%
+  inner_join(afinn, by = "word") %>%
+  summarise(score = sum(value / 5)) %>%
+  mutate(lexicon = "AFINN")
+
+# Combine the categorical lexicons
+categorical_lexicons <- bind_rows(
+  bing %>% mutate(lexicon = "Bing"),
+  nrc %>% mutate(lexicon = "NRC"),
+  loughran %>% mutate(lexicon = "Loughran-McDonald")
+) %>%
+  filter(sentiment %in% c("positive", "negative"))
+
+# Calculate categorical sentiment scores
+ev_categorical <- ev_words %>%
+  inner_join(
+    categorical_lexicons,
+    by = "word",
+    relationship = "many-to-many"
+  ) %>%
+  mutate(
+    value = if_else(sentiment == "positive", 1, -1)
+  ) %>%
+  group_by(lexicon) %>%
+  summarise(score = sum(value), .groups = "drop")
+
+# Normalize scores per 100 words
+ev_lexicon_comparison <- bind_rows(
+  ev_afinn,
+  ev_categorical
+) %>%
+  mutate(
+    normalized_score = score / total_ev_words * 100,
+    sentiment = case_when(
+  normalized_score > 0 ~ "Positive",
+  normalized_score < 0 ~ "Negative",
+  TRUE ~ "Neutral"
+)
+  )
+
+# Visualize the sentiment scores
+ggplot(
+  ev_lexicon_comparison,
+  aes(
+    x = reorder(lexicon, normalized_score),
+    y = normalized_score,
+    fill = sentiment
+  )
+) +
+  geom_col(width = 0.55, show.legend = FALSE) +
+  geom_hline(yintercept = 0, color = "gray40") +
+  geom_text(
+    aes(
+      label = sprintf("%.2f", normalized_score),
+      vjust = if_else(normalized_score >= 0, -0.5, 1.5)
+    ),
+    size = 4.5
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Positive" = "#59A14F",
+      "Negative" = "#E15759"
+    )
+  ) +
+  scale_y_continuous(
+    expand = expansion(mult = c(0.15, 0.20))
+  ) +
+  labs(
+    title = "Sentiment Comparison Across Four Lexicons",
+    subtitle = "Electric Vehicle Reviews",
+    x = NULL,
+    y = "Normalized Sentiment Score per 100 Words"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+All four sentiment lexicons produced positive sentiment scores. Bing obtained the highest normalized score (2.21), followed by NRC (2.12), AFINN (0.78), and Loughran-McDonald (0.13).
+
+Loughran-McDonald produced the lowest score, possibly because it was designed for financial text.
+
+These results show that different lexicons can produce different sentiment scores when analyzing the same dataset.
+
+## Comparison with the Original Analysis
+
+The original analysis uses Jane Austen's novels,
+while the proposed extension uses electric vehicle
+reviews.
+
+Both datasets are analyzed using the Bing lexicon
+and normalized sentiment scores to account for
+differences in dataset size.
+
+```{r ev-original-comparison, fig.width=9, fig.height=5}
+# Combine both datasets
+comparison_words <- bind_rows(
+  tidy_books %>%
+    select(word) %>%
+    mutate(dataset = "Jane Austen's Novels"),
+  ev_words %>%
+    select(word) %>%
+    mutate(dataset = "Electric Vehicle Reviews")
+)
+
+# Calculate total words in each dataset
+dataset_totals <- comparison_words %>%
+  count(dataset, name = "total_words")
+
+# Calculate normalized sentiment scores
+dataset_comparison <- comparison_words %>%
+  inner_join(bing, by = "word") %>%
+  mutate(
+    value = if_else(sentiment == "positive", 1, -1)
+  ) %>%
+  group_by(dataset) %>%
+  summarise(score = sum(value), .groups = "drop") %>%
+  left_join(dataset_totals, by = "dataset") %>%
+  mutate(
+    normalized_score = score / total_words * 100
+  )
+
+# Visualize the comparison
+ggplot(
+  dataset_comparison,
+  aes(
+    x = dataset,
+    y = normalized_score,
+    fill = dataset
+  )
+) +
+  geom_col(width = 0.5, show.legend = FALSE) +
+  geom_hline(yintercept = 0, color = "gray40") +
+  geom_text(
+    aes(
+      label = sprintf("%.2f", normalized_score),
+      vjust = if_else(normalized_score >= 0, -0.5, 1.5)
+    ),
+    size = 5
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Jane Austen's Novels" = "#4E79A7",
+      "Electric Vehicle Reviews" = "#59A14F"
+    )
+  ) +
+  scale_y_continuous(
+    expand = expansion(mult = c(0.20, 0.25))
+  ) +
+  labs(
+    title = "Original Analysis vs. Proposed Extension",
+    subtitle = "Sentiment comparison using the Bing lexicon",
+    x = NULL,
+    y = "Normalized Sentiment Score per 100 Words"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+Electric vehicle reviews produced a normalized sentiment score of 2.21, while Jane Austen's novels produced a score of 1.23.
+
+Both datasets show positive sentiment, but electric vehicle reviews obtained a higher score using the Bing lexicon.
+
+These differences may be related to the vocabulary, context, and purpose of each dataset.
+
+# Conclusions
+
+# Conclusions
+
+This project reproduced the main sentiment analysis methods presented in Chapter 2 of Text Mining with R and extended the analysis using 95 electric vehicle reviews.
+
+The most frequent positive words were "like", "well", and "good", while the most frequent negative words were "limited", "hard", "problem", and "expensive".
+
+Using the Bing lexicon, 70.9% of the sentiment words were positive and 29.1% were negative.
+
+All four sentiment lexicons produced positive scores. However, Bing obtained the highest normalized score (2.21), while Loughran-McDonald obtained the lowest (0.13).
+
+The comparison with Jane Austen's novels also showed that electric vehicle reviews obtained a higher normalized sentiment score.
+
+Overall, this project demonstrates the importance of data preparation, word context, and lexicon selection. Sentiment analysis can be a useful tool for understanding reviewers' opinions and identifying potential areas for improvement in the electric vehicle industry.
 
 # References
 
-- Silge, J., & Robinson, D. (2017). Text Mining with R:
-  A Tidy Approach. O'Reilly Media.
-  https://www.tidytextmining.com/
+- Silge, J., & Robinson, D. (2017). *Text Mining with R:
+  A Tidy Approach. Chapter 2: Sentiment Analysis with
+  Tidy Data.*
 
-- Chapter 2: Sentiment Analysis with Tidy Data.
   https://www.tidytextmining.com/sentiment.html
 
-- Expert Review Dataset on Electric Quadricycles.
-  Zenodo.
+- Electric Vehicle Reviews Dataset. Zenodo.
+
   https://zenodo.org/records/14501242
 
-- Tidytext R Package.
+- Tidytext: Text Mining Using dplyr, ggplot2, and Other
+  Tidy Tools.
+
   https://juliasilge.github.io/tidytext/
 
+- Textdata: Download and Load Various Text Datasets.
+
+  https://cran.r-project.org/package=textdata
+
+- R Project for Statistical Computing.
+
+  https://www.r-project.org/
+  
 - Tidyverse.
+
   https://www.tidyverse.org/
 
 - Loughran-McDonald Sentiment Word Lists.
+
   https://sraf.nd.edu/loughranmcdonald-master-dictionary/
   
 # Appendix: AI Assistance
 
-ChatGPT was used to help understand the assignment
-requirements, organize the planned approach, improve
-English writing, and provide guidance for the R code.
+ChatGPT was used to help understand the assignment requirements, organize the project, improve English writing, develop R code, and provide guidance on data preparation, sentiment analysis, visualizations, and interpretation of the results.
 
-I selected the electric vehicle topic based on my
-professional background and will run, review, and
-verify the data transformations, sentiment analysis,
-visualizations, and final conclusions.
+I selected the electric vehicle topic based on my professional background. I am responsible for running, reviewing, and verifying the R code, data transformations, analytical results, visualizations, and final conclusions.
