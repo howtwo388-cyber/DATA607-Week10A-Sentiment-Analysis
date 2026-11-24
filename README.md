@@ -2,7 +2,9 @@
 
 ## Project Overview
 
-This project reproduces the sentiment analysis presented in Chapter 2 of "Text Mining with R" and extends the analysis using electric vehicle reviews.
+This project reproduces the sentiment analysis presented in Chapter 2 of *Text Mining with R* and extends the analysis using electric vehicle reviews.
+
+The project compares sentiment results using four lexicons and explores positive and negative language in electric vehicle reviews.
 
 ## Dataset
 
@@ -10,7 +12,7 @@ Expert Review Dataset on Electric Quadricycles.
 
 - 95 electric vehicle reviews
 - 12 vehicle brands or models
-- 3 variables
+- 3 variables: Brand, URL, and Text
 
 Source: https://zenodo.org/records/14501242
 
@@ -21,18 +23,35 @@ Source: https://zenodo.org/records/14501242
 - NRC
 - Loughran-McDonald
 
-## RPubs Publication
+## RPubs Publications
 
-[Assignment 10A: Sentiment Analysis - Approach](https://rpubs.com/howtwo3/DATA607-Week10A-Sentiment-Analysis-Approach)
+**Approach:**
+
+https://rpubs.com/howtwo3/DATA607-Week10A-Sentiment-Analysis-Approach
+
+**Code Base and Video Presentation:**
+
+https://rpubs.com/howtwo3/DATA607-Week10A-CodeBase-Video
+
+## Video Presentation
+
+**DATA 607 – Week 10A: Sentiment Analysis**
+
+Watch the presentation on YouTube:
+
+https://youtu.be/Ur47INpJnX4
+
+## GitHub Repository
+
+https://github.com/howtwo388-cyber/DATA607-Week10A-Sentiment-Analysis
 
 ## Project Status
 
 - [x] Approach
-- [ ] Code Base
-- [ ] Final Analysis
+- [x] Code Base
+- [x] Final Analysis
+- [x] Video Presentation
 
 ## Author
 
-Patricio Romero  
-CUNY - DATA 607  
-Fall 2026
+Patricio Romero
