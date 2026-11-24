@@ -1244,8 +1244,6 @@ These differences may be related to the vocabulary, context, and purpose of each
 
 # Conclusions
 
-# Conclusions
-
 This project reproduced the main sentiment analysis methods presented in Chapter 2 of Text Mining with R and extended the analysis using 95 electric vehicle reviews.
 
 The most frequent positive words were "like", "well", and "good", while the most frequent negative words were "limited", "hard", "problem", and "expensive".
@@ -1290,6 +1288,16 @@ Overall, this project demonstrates the importance of data preparation, word cont
 - Loughran-McDonald Sentiment Word Lists.
 
   https://sraf.nd.edu/loughranmcdonald-master-dictionary/
+  
+
+# Video Presentation
+
+**DATA 607 – Week 10A: Sentiment Analysis**
+
+Watch the video presentation on YouTube:
+
+https://youtu.be/Ur47INpJnX4
+  
   
 # Appendix: AI Assistance
 
